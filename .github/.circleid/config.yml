@@ -1,0 +1,54 @@
+version: 2.1
+
+jobs:
+  lint-app-microservices:
+    docker:
+      - image: circleci/node:14.17.6
+    steps:
+      - checkout
+  build-docker:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build docker container - microservices
+          command: |
+            echo "------------------ Installing dependencies---------------------------"
+            sudo curl -LO https://nodejs.org/dist/v16.16.0/node-v16.16.0-linux-x64.tar.xz
+            sudo tar -xvf node-v16.16.0-linux-x64.tar.xz
+            sudo cp -r node-v16.16.0-linux-x64/{bin,include,lib,share} /usr/
+            node --version => v
+            sudo apt install nodejs
+
+            echo "--------- The images - Building ------------"
+
+            docker build -t udagram-api-feed ./udagram-api-feed
+            docker tag udagram-api-feed sangvv/udagram-api-feed:v3
+
+            docker build -t udagram-api-user ./udagram-api-user
+            docker tag udagram-api-user sangvv/udagram-api-user:v3
+            
+            docker build -t udagram-frontend ./udagram-frontend
+            docker tag udagram-frontend sangvv/udagram-frontend:v6
+
+            docker build -t udagram-reverseproxy ./udagram-reverseproxy
+            docker tag udagram-reverseproxy sangvv/reverseproxy:v3
+
+            echo "-------- All images succesfully built----------"
+
+            echo " ------- login in to hub--------"
+
+            docker login -u sangvv -p $DOCKERHUB_PASSWORD
+
+            echo "-------------- Pushing images to dockerhub-------"
+            
+            docker push sangvv/udagram-api-feed:v3
+            docker push sangvv/udagram-api-user:v3
+            docker push sangvv/udagram-frontend:v6
+            docker push sangvv/reverseproxy:v3
+workflows:
+  default:
+    jobs:
+      - lint-app-microservices
+      - build-docker:
+          requires: [lint-app-microservices]
