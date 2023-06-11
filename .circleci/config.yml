@@ -45,7 +45,7 @@ jobs:
             
             docker push phuongloan/udagram-api-feed:v1
             docker push phuongloan/udagram-api-user:v1
-            docker push phuongloan/udagram-frontend:v2
+            docker push phuongloan/udagram-frontend:v3
             docker push phuongloan/reverseproxy:v1
 workflows:
   default:
