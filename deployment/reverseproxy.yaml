@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: reverseproxy
-        image: docker.io/phuongloan/reverseproxy:v2
+        image: docker.io/phuongloan/reverseproxy:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 80
